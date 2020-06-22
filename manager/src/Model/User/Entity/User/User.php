@@ -8,6 +8,11 @@ namespace App\Model\User\Entity\User;
 class User
 {
     /**
+     * @var int
+     */
+    private $id;
+
+    /**
      * @var string
      */
     private $email;
@@ -23,8 +28,9 @@ class User
      * @param string $email
      * @param string $passwordHash
      */
-    public function __construct(string $email, string $passwordHash)
+    public function __construct(int $id, string $email, string $passwordHash)
     {
+        $this->id = $id;
         $this->email = $email;
         $this->passwordHash = $passwordHash;
     }
@@ -43,5 +49,13 @@ class User
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 }

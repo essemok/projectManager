@@ -7,7 +7,6 @@ namespace App\Model\User\UseCase\SignUp\Request;
 use Doctrine\ORM\EntityManager;
 use App\Model\User\Entity\User\User;
 
-
 class Handler
 {
     /**

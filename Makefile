@@ -21,6 +21,9 @@ manager-init: manager-composer-install
 manager-composer-install:
 	docker-compose run --rm manager-php-cli composer install
 
+tests:
+	docker-compose run --rm manager-php-cli php bin/phpunit
+
 cli:
 	docker-compose run --rm manager-php-cli php bin/app.php
 
