@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Model\User\Entity\User;
 
-
 class User
 {
     /**
-     * @var int
+     * @var string
      */
     private $id;
+
+    /**
+     * @var \DateTimeImmutable
+     */
+    private $dateOfCreation;
 
     /**
      * @var string
@@ -28,34 +32,31 @@ class User
      * @param string $email
      * @param string $passwordHash
      */
-    public function __construct(int $id, string $email, string $passwordHash)
+    public function __construct(string $id, \DateTimeImmutable $dateOfCreation, string $email, string $passwordHash)
     {
         $this->id = $id;
+        $this->dateOfCreation = $dateOfCreation;
         $this->email = $email;
         $this->passwordHash = $passwordHash;
     }
 
-    /**
-     * @return string
-     */
     public function getEmail()
     {
         return $this->email;
     }
 
-    /**
-     * @return string
-     */
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
+    }
+
+    public function getDateOfCreation(): \DateTimeImmutable
+    {
+        return $this->dateOfCreation;
     }
 }
