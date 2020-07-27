@@ -55,6 +55,10 @@ Class Handler
         $this->sender = $sender;
     }
 
+    /**
+     * @param Command $command
+     * @throws \DomainException
+     */
     public function handle(Command $command)
     {
         $email = new Email($command->email);

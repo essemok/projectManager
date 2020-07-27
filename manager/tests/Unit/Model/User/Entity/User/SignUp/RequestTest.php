@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unit\Model\User\Entity\User\SignUp;
 
 use App\Model\User\Entity\User\Email;
@@ -21,10 +23,13 @@ class RequestTest extends TestCase
             $token = (new ConfirmTokenizer())->generate()
         );
 
+        self::assertTrue($user->isWait());
+        self::assertFalse($user->isActive());
+
         self::assertEquals($id, $user->getId());
         self::assertEquals($dateOfCreation, $user->getDateOfCreation());
         self::assertEquals($email, $user->getEmail());
         self::assertEquals($hash, $user->getPasswordHash());
-        self::assertEquals($token, $user->getToken());
+        self::assertEquals($token, $user->getConfirmToken());
     }
 }

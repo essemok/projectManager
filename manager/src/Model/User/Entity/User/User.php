@@ -6,6 +6,9 @@ namespace App\Model\User\Entity\User;
 
 class User
 {
+    private const STATUS_WAIT = 'wait';
+
+    private const STATUS_ACTIVE = 'active';
     /**
      * @var Id
      */
@@ -29,7 +32,12 @@ class User
     /**
      * @var string
      */
-    private $token;
+    private $confirmToken;
+
+    /**
+     * @var string
+     */
+    private $status;
 
 
     public function __construct(
@@ -43,7 +51,30 @@ class User
         $this->dateOfCreation = $dateOfCreation;
         $this->email = $email;
         $this->passwordHash = $hash;
-        $this->token = $token;
+        $this->confirmToken = $token;
+        $this->status = self::STATUS_WAIT;
+    }
+
+    public function isWait(): bool
+    {
+        return $this->status === self::STATUS_WAIT;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_ACTIVE;
+    }
+
+    /**
+     * @throws \DomainException
+     */
+    public function confirmSignUp(): void
+    {
+        if (!$this->isWait()) {
+            throw new \DomainException('User is already confirmed.');
+        }
+        $this->status = self::STATUS_ACTIVE;
+        $this->confirmToken = null;
     }
 
     public function getId(): Id
@@ -69,8 +100,8 @@ class User
     /**
      * @return string
      */
-    public function getToken(): string
+    public function getConfirmToken(): ?string
     {
-        return $this->token;
+        return $this->confirmToken;
     }
 }
