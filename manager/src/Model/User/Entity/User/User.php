@@ -39,20 +39,53 @@ class User
      */
     private $status;
 
+    /**
+     * @var string
+     */
+    private $network;
 
-    public function __construct(
+    /**
+     * @var string
+     */
+    private $identity;
+
+
+    private function __construct(Id $id, \DateTimeImmutable $dateOfCreation)
+    {
+        $this->id = $id;
+        $this->dateOfCreation = $dateOfCreation;
+    }
+
+    public static function signUpByEmail(
         Id $id,
-        \DateTimeImmutable $dateOfCreation,
+        \DateTimeImmutable $date,
         Email $email,
         string $hash,
         string $token
-    ) {
-        $this->id = $id;
-        $this->dateOfCreation = $dateOfCreation;
-        $this->email = $email;
-        $this->passwordHash = $hash;
-        $this->confirmToken = $token;
-        $this->status = self::STATUS_WAIT;
+    ): self {
+        $user = new self($id, $date);
+
+        $user->email = $email;
+        $user->passwordHash = $hash;
+        $user->confirmToken = $token;
+        $user->status = self::STATUS_WAIT;
+
+        return $user;
+    }
+
+    public static function singUpByNetwork(
+        Id $id,
+        \DateTimeImmutable $date,
+        string $network,
+        string $identity
+    ): self {
+        $user = new self($id, $date);
+
+        $user->network = $network;
+        $user->identity = $identity;
+        $user->status = self::STATUS_ACTIVE;
+
+        return $user;
     }
 
     public function isWait(): bool
@@ -103,5 +136,21 @@ class User
     public function getConfirmToken(): ?string
     {
         return $this->confirmToken;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNetwork(): string
+    {
+        return $this->network;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdentity(): string
+    {
+        return $this->identity;
     }
 }
