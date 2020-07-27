@@ -7,7 +7,7 @@ namespace App\Model\User\Entity\User;
 class User
 {
     /**
-     * @var string
+     * @var Id
      */
     private $id;
 
@@ -17,7 +17,7 @@ class User
     private $dateOfCreation;
 
     /**
-     * @var string
+     * @var Email
      */
     private $email;
 
@@ -27,20 +27,36 @@ class User
     private $passwordHash;
 
     /**
-     * User constructor.
-     *
-     * @param string $email
-     * @param string $passwordHash
+     * @var string
      */
-    public function __construct(string $id, \DateTimeImmutable $dateOfCreation, string $email, string $passwordHash)
-    {
+    private $token;
+
+
+    public function __construct(
+        Id $id,
+        \DateTimeImmutable $dateOfCreation,
+        Email $email,
+        string $hash,
+        string $token
+    ) {
         $this->id = $id;
         $this->dateOfCreation = $dateOfCreation;
         $this->email = $email;
-        $this->passwordHash = $passwordHash;
+        $this->passwordHash = $hash;
+        $this->token = $token;
     }
 
-    public function getEmail()
+    public function getId(): Id
+    {
+        return $this->id;
+    }
+
+    public function getDateOfCreation(): \DateTimeImmutable
+    {
+        return $this->dateOfCreation;
+    }
+
+    public function getEmail(): Email
     {
         return $this->email;
     }
@@ -50,13 +66,11 @@ class User
         return $this->passwordHash;
     }
 
-    public function getId(): string
+    /**
+     * @return string
+     */
+    public function getToken(): string
     {
-        return $this->id;
-    }
-
-    public function getDateOfCreation(): \DateTimeImmutable
-    {
-        return $this->dateOfCreation;
+        return $this->token;
     }
 }
