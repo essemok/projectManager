@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Model\User\Entity\User;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 class User
 {
+    private const STATUS_NEW = 'new';
     private const STATUS_WAIT = 'wait';
-
     private const STATUS_ACTIVE = 'active';
+
     /**
      * @var Id
      */
@@ -40,52 +43,44 @@ class User
     private $status;
 
     /**
-     * @var string
+     * @var Network[]|ArrayCollection
      */
-    private $network;
-
-    /**
-     * @var string
-     */
-    private $identity;
+    private $networks;
 
 
-    private function __construct(Id $id, \DateTimeImmutable $dateOfCreation)
+    public function __construct(Id $id, \DateTimeImmutable $dateOfCreation)
     {
         $this->id = $id;
         $this->dateOfCreation = $dateOfCreation;
+        $this->status = self::STATUS_NEW;
+        $this->networks = new ArrayCollection();
+
     }
 
-    public static function signUpByEmail(
-        Id $id,
-        \DateTimeImmutable $date,
-        Email $email,
-        string $hash,
-        string $token
-    ): self {
-        $user = new self($id, $date);
-
-        $user->email = $email;
-        $user->passwordHash = $hash;
-        $user->confirmToken = $token;
-        $user->status = self::STATUS_WAIT;
-
-        return $user;
+    public function signUpByEmail(Email $email, string $hash, string $token)
+    {
+        if (!$this->isNew()) {
+            throw new \DomainException('User is already signed up.');
+        }
+        $this->email = $email;
+        $this->passwordHash = $hash;
+        $this->confirmToken = $token;
+        $this->status = self::STATUS_WAIT;
     }
 
-    public static function singUpByNetwork(
-        Id $id,
-        \DateTimeImmutable $date,
-        string $network,
-        string $identity
-    ): self {
-        $user = new self($id, $date);
+    public function signUpByNetwork(string $network, string $identity)
+    {
+        if (!$this->isNew()) {
+            throw new \DomainException('User is already signed up.');
+        }
 
-        $user->network = $network;
-        $user->identity = $identity;
-        $user->status = self::STATUS_ACTIVE;
+        $this->attachNetwork($network, $identity);
+        $this->status = self::STATUS_ACTIVE;
+    }
 
-        return $user;
+    public function isNew()
+    {
+        return $this->status === self::STATUS_NEW;
     }
 
     public function isWait(): bool
@@ -138,19 +133,21 @@ class User
         return $this->confirmToken;
     }
 
-    /**
-     * @return string
-     */
-    public function getNetwork(): string
+    private function attachNetwork(string $network, string $identity)
     {
-        return $this->network;
+        foreach ($this->networks as $existing) {
+            if ($existing->isAlreadyAttached($network)) {
+                throw new \DomainException('Network is already attached.');
+            }
+        }
+        $this->networks->add(new Network($this, $network, $identity));
     }
 
     /**
-     * @return string
+     * @return Network[]
      */
-    public function getIdentity(): string
+    public function getNetworks(): array
     {
-        return $this->identity;
+        return $this->networks->toArray();
     }
 }

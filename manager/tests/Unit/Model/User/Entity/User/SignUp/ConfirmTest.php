@@ -35,12 +35,17 @@ class ConfirmTest extends TestCase
 
     private function buildSignedUser(): User
     {
-        return new User(
+        $user = new User(
             Id::next(),
-            new \DateTimeImmutable(),
+            new \DateTimeImmutable()
+        );
+
+        $user->signUpByEmail(
             new Email('hot_peper@bk.ru'),
             (new PasswordHasher())->hash('hash'),
             (new ConfirmTokenizer())->generate()
         );
+
+        return $user;
     }
 }

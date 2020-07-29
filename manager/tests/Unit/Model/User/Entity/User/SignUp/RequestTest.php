@@ -17,7 +17,12 @@ class RequestTest extends TestCase
     {
         $user = new User(
             $id = Id::next(),
-            $dateOfCreation = new \DateTimeImmutable(),
+            $dateOfCreation = new \DateTimeImmutable()
+        );
+
+        self::assertTrue($user->isNew());
+
+        $user->signUpByEmail(
             $email = new Email('test@app.test'),
             $hash = (new PasswordHasher())->hash('hash'),
             $token = (new ConfirmTokenizer())->generate()
