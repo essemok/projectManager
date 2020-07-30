@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Unit\Model\User\Entity\User\Network;
 
-use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\Network;
-use App\Model\User\Entity\User\User;
 use PHPUnit\Framework\TestCase;
+use App\Tests\Unit\Builder\User\UserBuilder;
 
 class AuthTest extends TestCase
 {
     public function testSuccess(): void
     {
-        $user = new User(Id::next(), new \DateTimeImmutable());
-
-        $user->signUpByNetwork($network = 'vk', $identity = '00000001');
+        $user = (new UserBuilder())
+            ->viaNetwork($network = 'vk', $identity = '00001')
+            ->build();
 
         self::assertTrue($user->isActive());
 
@@ -27,9 +26,9 @@ class AuthTest extends TestCase
 
     public function testAlready(): void
     {
-        $user = new User(Id::next(), new \DateTimeImmutable());
-
-        $user->signUpByNetwork($network = 'vk', $identity = '00000001');
+        $user = (new UserBuilder())
+            ->viaNetwork($network = 'vk', $identity = '00001')
+            ->build();
 
         self::expectExceptionMessage('User is already signed up.');
 

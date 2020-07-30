@@ -23,17 +23,17 @@ class User
     private $dateOfCreation;
 
     /**
-     * @var Email
+     * @var Email|null
      */
     private $email;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $passwordHash;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $confirmToken;
 
@@ -46,6 +46,11 @@ class User
      * @var Network[]|ArrayCollection
      */
     private $networks;
+
+    /**
+     * @var ResetToken|null
+     */
+    private $resetToken;
 
 
     public function __construct(Id $id, \DateTimeImmutable $dateOfCreation)
@@ -76,6 +81,36 @@ class User
 
         $this->attachNetwork($network, $identity);
         $this->status = self::STATUS_ACTIVE;
+    }
+
+    public function requestPasswordReset(ResetToken $token, \DateTimeImmutable $date): void
+    {
+        if (!$this->email) {
+            throw new \DomainException('Email is not specified.');
+        }
+        if ($this->resetToken && !$this->resetToken->isExpiredTo($date)) {
+            throw new \DomainException('Resetting is already requesting.');
+        }
+
+        $this->resetToken = $token;
+    }
+
+    public function passwordReset(\DateTimeImmutable $now, string $hash): void
+    {
+        if (!$this->resetToken) {
+            throw new \DomainException('Resetting is not requested.');
+        }
+
+        if ($this->resetToken->isExpiredTo($now)) {
+            throw new \DomainException('Reset token is expired.');
+        }
+
+        $this->passwordHash = $hash;
+    }
+
+    public function getResetToken(): ResetToken
+    {
+        return $this->resetToken;
     }
 
     public function isNew()

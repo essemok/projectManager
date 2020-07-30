@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Unit\Model\User\Entity\User\SignUp;
 
-use App\Model\User\Entity\User\Email;
-use App\Model\User\Entity\User\Id;
-use App\Model\User\Entity\User\User;
-use App\Model\User\Service\ConfirmTokenizer;
-use App\Model\User\Service\PasswordHasher;
 use PHPUnit\Framework\TestCase;
+use App\Tests\Unit\Builder\User\UserBuilder;
 
 class ConfirmTest extends TestCase
 {
     public function testSuccess(): void
     {
-        $user = $this->buildSignedUser();
+        $user = $user = (new UserBuilder())
+            ->viaEmail()
+            ->build();
         $user->confirmSignUp();
 
         self::assertFalse($user->isWait());
@@ -26,26 +24,12 @@ class ConfirmTest extends TestCase
 
     public function testAlready(): void
     {
-        $user = $this->buildSignedUser();
+        $user = $user = (new UserBuilder())
+            ->viaEmail()
+            ->build();
         $user->confirmSignUp();
 
         $this->expectExceptionMessage('User is already confirmed.');
         $user->confirmSignUp();
-    }
-
-    private function buildSignedUser(): User
-    {
-        $user = new User(
-            Id::next(),
-            new \DateTimeImmutable()
-        );
-
-        $user->signUpByEmail(
-            new Email('hot_peper@bk.ru'),
-            (new PasswordHasher())->hash('hash'),
-            (new ConfirmTokenizer())->generate()
-        );
-
-        return $user;
     }
 }

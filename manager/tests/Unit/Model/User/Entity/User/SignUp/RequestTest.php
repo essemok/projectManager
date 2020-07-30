@@ -9,12 +9,15 @@ use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\User;
 use App\Model\User\Service\ConfirmTokenizer;
 use App\Model\User\Service\PasswordHasher;
+use App\Tests\Unit\Builder\User\UserBuilder;
 use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
 {
     public function testSuccess()
     {
+
+        $user = (new UserBuilder());
         $user = new User(
             $id = Id::next(),
             $dateOfCreation = new \DateTimeImmutable()
