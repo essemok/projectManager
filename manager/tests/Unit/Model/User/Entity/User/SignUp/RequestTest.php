@@ -16,8 +16,6 @@ class RequestTest extends TestCase
 {
     public function testSuccess()
     {
-
-        $user = (new UserBuilder());
         $user = new User(
             $id = Id::next(),
             $dateOfCreation = new \DateTimeImmutable()

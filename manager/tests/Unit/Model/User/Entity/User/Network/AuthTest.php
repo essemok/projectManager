@@ -14,6 +14,7 @@ class AuthTest extends TestCase
     {
         $user = (new UserBuilder())
             ->viaNetwork($network = 'vk', $identity = '00001')
+            ->confirmed()
             ->build();
 
         self::assertTrue($user->isActive());
@@ -28,6 +29,7 @@ class AuthTest extends TestCase
     {
         $user = (new UserBuilder())
             ->viaNetwork($network = 'vk', $identity = '00001')
+            ->confirmed()
             ->build();
 
         self::expectExceptionMessage('User is already signed up.');

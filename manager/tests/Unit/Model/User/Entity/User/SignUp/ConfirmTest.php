@@ -13,8 +13,8 @@ class ConfirmTest extends TestCase
     {
         $user = $user = (new UserBuilder())
             ->viaEmail()
+            ->confirmed()
             ->build();
-        $user->confirmSignUp();
 
         self::assertFalse($user->isWait());
         self::assertTrue($user->isActive());
@@ -26,8 +26,8 @@ class ConfirmTest extends TestCase
     {
         $user = $user = (new UserBuilder())
             ->viaEmail()
+            ->confirmed()
             ->build();
-        $user->confirmSignUp();
 
         $this->expectExceptionMessage('User is already confirmed.');
         $user->confirmSignUp();

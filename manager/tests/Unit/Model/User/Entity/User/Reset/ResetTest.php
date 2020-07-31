@@ -13,6 +13,7 @@ class ResetTest extends TestCase
     {
         $user = $user = (new UserBuilder())
             ->viaEmail()
+            ->confirmed()
             ->build();
 
         $now = new \DateTimeImmutable();
@@ -32,6 +33,7 @@ class ResetTest extends TestCase
     {
         $user = $user = (new UserBuilder())
             ->viaEmail()
+            ->confirmed()
             ->build();
 
         $now = new \DateTimeImmutable();
@@ -48,6 +50,7 @@ class ResetTest extends TestCase
     {
         $user = $user = (new UserBuilder())
             ->viaEmail()
+            ->confirmed()
             ->build();
 
         $now = new \DateTimeImmutable();

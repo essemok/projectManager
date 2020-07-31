@@ -16,6 +16,7 @@ class UserBuilder
     private $email;
     private $hash;
     private $token;
+    private $confirmed;
 
     private $network;
     private $identity;
@@ -45,6 +46,14 @@ class UserBuilder
         return $clone;
     }
 
+    public function confirmed(): self
+    {
+        $clone = clone $this;
+        $clone->confirmed = true;
+
+        return $clone;
+    }
+
     public function build(): User
     {
         $user = new User(
@@ -58,6 +67,10 @@ class UserBuilder
                 $this->hash,
                 $this->token
             );
+
+            if($this->confirmed) {
+                $user->confirmSignUp();
+            }
         }
 
         if ($this->network) {
