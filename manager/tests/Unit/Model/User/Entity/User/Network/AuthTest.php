@@ -23,17 +23,7 @@ class AuthTest extends TestCase
         self::assertInstanceOf(Network::class, $firstNetwork = reset($userNetworks));
         self::assertEquals($network, $firstNetwork->getNetwork());
         self::assertEquals($identity, $firstNetwork->getIdentity());
-    }
 
-    public function testAlready(): void
-    {
-        $user = (new UserBuilder())
-            ->viaNetwork($network = 'vk', $identity = '00001')
-            ->confirmed()
-            ->build();
-
-        self::expectExceptionMessage('User is already signed up.');
-
-        $user->signUpByNetwork($network, $identity);
+        self::assertTrue($user->getRole()->isUser());
     }
 }
