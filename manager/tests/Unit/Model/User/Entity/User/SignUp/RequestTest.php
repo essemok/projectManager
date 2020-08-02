@@ -9,21 +9,15 @@ use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\User;
 use App\Model\User\Service\ConfirmTokenizer;
 use App\Model\User\Service\PasswordHasher;
-use App\Tests\Unit\Builder\User\UserBuilder;
 use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
 {
     public function testSuccess()
     {
-        $user = new User(
+        $user = User::signUpByEmail(
             $id = Id::next(),
-            $dateOfCreation = new \DateTimeImmutable()
-        );
-
-        self::assertTrue($user->isNew());
-
-        $user->signUpByEmail(
+            $dateOfCreation = new \DateTimeImmutable(),
             $email = new Email('test@app.test'),
             $hash = (new PasswordHasher())->hash('hash'),
             $token = (new ConfirmTokenizer())->generate()
