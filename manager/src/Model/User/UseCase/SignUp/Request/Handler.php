@@ -4,35 +4,82 @@ declare(strict_types=1);
 
 namespace App\Model\User\UseCase\SignUp\Request;
 
-use Doctrine\ORM\EntityManager;
+use App\Model\User\Entity\User\Email;
+use App\Model\User\Entity\User\Id;
+use App\Model\User\Entity\User\UserRepository;
 use App\Model\User\Entity\User\User;
+use App\Model\User\Flusher;
+use App\Model\User\Service\ConfirmTokenizer;
+use App\Model\User\Service\ConfirmTokenSender;
+use App\Model\User\Service\PasswordHasher;
 
-class Handler
+Class Handler
 {
     /**
-     * @var EntityManager
+     * @var UserRepository
      */
-    private $em;
+    private $users;
 
-    public function __construct(EntityManager $em)
-    {
-        $this->em = $em;
+    /**
+     * @var PasswordHasher
+     */
+    private $hasher;
+
+    /**
+     * @var ConfirmTokenizer
+     */
+    private $tokenizer;
+
+    /**
+     * @var ConfirmTokenSender
+     */
+    private $sender;
+
+    /**
+     * @var Flusher
+     */
+    private $flusher;
+
+
+    public function __construct(
+        UserRepository $users,
+        PasswordHasher $hasher,
+        ConfirmTokenizer $tokenizer,
+        ConfirmTokenSender $sender,
+        Flusher $flusher
+    ) {
+        $this->users = $users;
+        $this->hasher = $hasher;
+        $this->flusher = $flusher;
+        $this->tokenizer = $tokenizer;
+        $this->sender = $sender;
     }
 
-    public function handle(Command $command): void
+    /**
+     * @param Command $command
+     * @throws \DomainException
+     */
+    public function handle(Command $command)
     {
-        $email = mb_strtolower($command->email);
+        $email = new Email($command->email);
 
-        if ($this->em->getRepository(User::class)->findOneBy(['email' => $email])) {
+        if ($this->users->hasByEmail($email)) {
             throw new \DomainException('User already exist!');
         }
 
         $user = new User(
-            $email,
-            password_hash($command->password, PASSWORD_ARGON2I)
+            Id::next(),
+            new \DateTimeImmutable()
         );
 
-        $this->em->persist();
-        $this->em->flush();
+        $user->signUpByEmail(
+            $email,
+            $this->hasher->hash($command->password),
+            $token = $this->tokenizer->generate()
+        );
+
+        $this->users->add($user);
+        $this->sender->send($email, $token);
+        $this->flusher->flush();
     }
 }
