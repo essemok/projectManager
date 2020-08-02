@@ -12,6 +12,8 @@ interface UserRepository
 
     public function add(User $user): void;
 
+    public function get(Id $id): User;
+
     public function findByConfirmToken(string $token): ?User;
 
     public function findByResetToken(string $token): ?User;
