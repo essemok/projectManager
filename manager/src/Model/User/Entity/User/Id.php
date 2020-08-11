@@ -25,6 +25,9 @@ class Id
         return new Id(Uuid::uuid4()->toString());
     }
 
+    /**
+     * @return string
+     */
     function getValue(): string
     {
         return $this->value;

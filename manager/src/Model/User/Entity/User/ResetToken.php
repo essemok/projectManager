@@ -25,11 +25,18 @@ class ResetToken
         $this->expires = $expires;
     }
 
+    /**
+     * @param \DateTimeImmutable $date
+     * @return bool
+     */
     public function isExpiredTo(\DateTimeImmutable $date): bool
     {
         return $this->expires <= $date;
     }
 
+    /**
+     * @return string
+     */
     public function getToken(): string
     {
         return $this->token;

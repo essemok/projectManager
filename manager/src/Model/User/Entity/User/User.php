@@ -10,8 +10,8 @@ use DomainException;
 
 class User
 {
-    private const STATUS_NEW = 'new';
-    private const STATUS_WAIT = 'wait';
+    private const STATUS_NEW    = 'new';
+    private const STATUS_WAIT   = 'wait';
     private const STATUS_ACTIVE = 'active';
 
     /**
@@ -95,9 +95,6 @@ class User
         return $user;
     }
 
-    /**
-     * @throws DomainException
-     */
     public function confirmSignUp(): void
     {
         if (!$this->isWait()) {
@@ -144,7 +141,7 @@ class User
         $this->role = $role;
     }
 
-    private function attachNetwork(string $network, string $identity)
+    private function attachNetwork(string $network, string $identity): void
     {
         foreach ($this->networks as $existing) {
             if ($existing->isAlreadyAttached($network)) {
@@ -154,41 +151,65 @@ class User
         $this->networks->add(new Network($this, $network, $identity));
     }
 
+    /**
+     * @return ResetToken
+     */
     public function getResetToken(): ResetToken
     {
         return $this->resetToken;
     }
 
-    public function isNew()
+    /**
+     * @return bool
+     */
+    public function isNew(): bool
     {
         return $this->status === self::STATUS_NEW;
     }
 
+    /**
+     * @return bool
+     */
     public function isWait(): bool
     {
         return $this->status === self::STATUS_WAIT;
     }
 
+    /**
+     * @return bool
+     */
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
     }
 
+    /**
+     * @return Id
+     */
     public function getId(): Id
     {
         return $this->id;
     }
 
+    /**
+     * @return DateTimeImmutable
+     */
     public function getDateOfCreation(): DateTimeImmutable
     {
         return $this->dateOfCreation;
     }
 
+    /**
+     * @return Email
+     */
     public function getEmail(): Email
     {
         return $this->email;
     }
 
+    /**
+     * @return string
+     */
     public function getPasswordHash(): string
     {
         return $this->passwordHash;

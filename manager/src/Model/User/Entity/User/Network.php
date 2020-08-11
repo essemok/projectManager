@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Model\User\Entity\User;
 
-
 use Ramsey\Uuid\Uuid;
 
 class Network
@@ -37,16 +36,26 @@ class Network
         $this->identity = $identity;
     }
 
-    public function isAlreadyAttached(string $network)
+    /**
+     * @param string $network
+     * @return bool
+     */
+    public function isAlreadyAttached(string $network): bool
     {
         return $this->network === $network;
     }
 
+    /**
+     * @return string
+     */
     public function getNetwork(): string
     {
         return $this->network;
     }
 
+    /**
+     * @return string
+     */
     public function getIdentity(): string
     {
         return $this->identity;
