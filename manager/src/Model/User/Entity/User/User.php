@@ -22,6 +22,8 @@ class User
 
     /**
      * @var Id
+     * @ORM\Column(type="user_user_id")
+     * @ORM\Id
      */
     private $id;
 
@@ -33,6 +35,7 @@ class User
 
     /**
      * @var Email|null
+     * @ORM\Column(type="user_user_email", nullable=true)
      */
     private $email;
 
@@ -62,6 +65,7 @@ class User
 
     /**
      * @var Role
+     * @ORM\Column(type="user_user_role")
      */
     private $role;
 

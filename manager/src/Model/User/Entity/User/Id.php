@@ -28,8 +28,13 @@ class Id
     /**
      * @return string
      */
-    function getValue(): string
+    public function getValue(): string
     {
         return $this->value;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getValue();
     }
 }
