@@ -33,16 +33,26 @@ class Role
         return new self(self::ADMIN);
     }
 
+    /**
+     * @param Role $role
+     * @return bool
+     */
     public function isEqual(self $role): bool
     {
         return $this->getName() === $role->getName();
     }
 
+    /**
+     * @return bool
+     */
     public function isUser(): bool
     {
         return $this->name === self::USER;
     }
 
+    /**
+     * @return bool
+     */
     public function isAdmin(): bool
     {
         return $this->name === self::ADMIN;

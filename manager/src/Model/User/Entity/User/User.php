@@ -7,57 +7,76 @@ namespace App\Model\User\Entity\User;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use DomainException;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
+ * @ORM\Table(name="user_users", uniqueConstraints={
+ *      @ORM\UniqueConstraint(columns={"email"}),
+ *      @ORM\UniqueConstraint(columns={"reset_token_token"})
+ * })
+ */
 class User
 {
-    private const STATUS_NEW = 'new';
-    private const STATUS_WAIT = 'wait';
+    private const STATUS_NEW    = 'new';
+    private const STATUS_WAIT   = 'wait';
     private const STATUS_ACTIVE = 'active';
 
     /**
      * @var Id
+     * @ORM\Column(type="user_user_id")
+     * @ORM\Id
      */
     private $id;
 
     /**
      * @var DateTimeImmutable
+     * @ORM\Column(type="datetime_immutable", name="date_of_creation")
      */
     private $dateOfCreation;
 
     /**
      * @var Email|null
+     * @ORM\Column(type="user_user_email", nullable=true)
      */
     private $email;
 
     /**
      * @var string|null
+     * @ORM\Column(type="string", nullable=true, name="password_hash")
      */
     private $passwordHash;
 
     /**
      * @var string|null
+     * @ORM\Column(type="string", nullable=true, name="confirm_token")
      */
     private $confirmToken;
 
     /**
+     * @var ResetToken|null
+     * @ORM\Embedded(class="ResetToken", columnPrefix="reset_token_")
+     */
+    private $resetToken;
+
+    /**
      * @var string
+     * @ORM\Column(type="string", length=16)
      */
     private $status;
 
     /**
      * @var Role
+     * @ORM\Column(type="user_user_role")
      */
     private $role;
 
     /**
      * @var Network[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="Network", mappedBy="user", orphanRemoval=true, cascade={"persist"})
      */
     private $networks;
-
-    /**
-     * @var ResetToken|null
-     */
-    private $resetToken;
 
     private function __construct(Id $id, DateTimeImmutable $dateOfCreation)
     {
@@ -95,9 +114,6 @@ class User
         return $user;
     }
 
-    /**
-     * @throws DomainException
-     */
     public function confirmSignUp(): void
     {
         if (!$this->isWait()) {
@@ -144,7 +160,7 @@ class User
         $this->role = $role;
     }
 
-    private function attachNetwork(string $network, string $identity)
+    private function attachNetwork(string $network, string $identity): void
     {
         foreach ($this->networks as $existing) {
             if ($existing->isAlreadyAttached($network)) {
@@ -154,41 +170,65 @@ class User
         $this->networks->add(new Network($this, $network, $identity));
     }
 
+    /**
+     * @return ResetToken
+     */
     public function getResetToken(): ResetToken
     {
         return $this->resetToken;
     }
 
-    public function isNew()
+    /**
+     * @return bool
+     */
+    public function isNew(): bool
     {
         return $this->status === self::STATUS_NEW;
     }
 
+    /**
+     * @return bool
+     */
     public function isWait(): bool
     {
         return $this->status === self::STATUS_WAIT;
     }
 
+    /**
+     * @return bool
+     */
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
     }
 
+    /**
+     * @return Id
+     */
     public function getId(): Id
     {
         return $this->id;
     }
 
+    /**
+     * @return DateTimeImmutable
+     */
     public function getDateOfCreation(): DateTimeImmutable
     {
         return $this->dateOfCreation;
     }
 
+    /**
+     * @return Email
+     */
     public function getEmail(): Email
     {
         return $this->email;
     }
 
+    /**
+     * @return string
+     */
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
@@ -216,5 +256,15 @@ class User
     public function getRole(): Role
     {
         return $this->role;
+    }
+
+    /**
+     * @ORM\PostLoad()
+     */
+    public function checkEmbeds(): void
+    {
+        if ($this->resetToken->isEmpty()) {
+            $this->resetToken = null;
+        }
     }
 }
